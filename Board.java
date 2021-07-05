@@ -7,17 +7,22 @@ public class Board {
 
 	Tile[][] board = new Tile[11][11];
 	int[] kingCoords = new int[2];
-	
+
 	int numMoves;
-	
-	Scanner scnr = new Scanner(System.in); 
+
+	Scanner scnr = new Scanner(System.in);
 	Board lastBoard;
-	
+
 	Move deflastMove;
 	Move deflastlastMove;
 	Move attlastMove;
 	Move attlastlastMove;
-	
+
+	/**
+	*	Sets the current board to the given board
+	*
+	*	@param b given board
+	**/
 	public Board(Board b) {
 		for(int i = 0; i<b.board.length; ++i)
 		{
@@ -42,11 +47,14 @@ public class Board {
 		deflastlastMove = new Move(b.deflastlastMove);
 		attlastMove = new Move(b.attlastMove);
 		attlastlastMove = new Move(b.attlastlastMove);
-		
+
 		lastBoard = b.lastBoard;
-		
+
 	}
-	
+
+	/**
+	*	Initializes the board with the pieces in their starting positions
+	**/
 	public Board() throws IOException {
 		numMoves = 0;
 		for(int i = 3; i<8; ++i)
@@ -60,7 +68,7 @@ public class Board {
 		board[9][5] = new Tile(new Piece(false));
 		board[5][1] = new Tile(new Piece(false));
 		board[5][9] = new Tile(new Piece(false));
-		
+
 		for(int i = 4; i < 7; ++i)
 		{
 			for(int j = 4; j < 7; ++j)
@@ -75,12 +83,12 @@ public class Board {
 		board[5][7] = new Tile(new Piece(true));
 		board[3][5] = new Tile(new Piece(true));
 		board[7][5] = new Tile(new Piece(true));
-		
+
 		board[0][0] = new Tile(true);
 		board[0][10] = new Tile(true);
 		board[10][10] = new Tile(true);
 		board[10][0] = new Tile(true);
-		
+
 		//Fill rest with empty
 		for(int r = 0; r < board.length; ++r)
 		{
@@ -90,10 +98,13 @@ public class Board {
 					board[r][c] = new Tile();
 			}
 		}
-		
+
 		kingCoords = new int[]{5,5};
 	}
-	
+
+	/**
+	*	Prints the current board to the terminal for the player to see
+	**/
 	public void printBoard()
 	{
 		int count = 0;
@@ -119,10 +130,13 @@ public class Board {
 		}
 		System.out.println();
 	}
-	
+
+	/**
+	*	Prints the current board to a file
+	**/
 	public void printToFile() throws IOException {
 		FileWriter fileWriter = new FileWriter("GameOutput.txt", true);
-		
+
 		int count = 0;
 		fileWriter.append("\t 0  1  2  3  4  5  6  7  8  9  10\n\n\n");
 		for(int r = 0; r < board.length; ++r)
@@ -148,6 +162,12 @@ public class Board {
 		fileWriter.close();
 	}
 
+	/**
+	*	At each piece on the side you are looking at(defenders or attackers), checks to see if those pieces are able to move
+	*	If none of the pieces were able to move the game would be over
+	*
+	*	@param defenders whether you are looking at the moves left for defenders or attackers
+	**/
 	public boolean movesLeft(boolean defenders)
 	{
 		for(int r = 0; r < board.length; ++r)
@@ -185,7 +205,7 @@ public class Board {
 						}
 						row++;
 					}
-					
+
 					row = r-1;
 					col = c;
 					validMove = true;
@@ -215,7 +235,7 @@ public class Board {
 						}
 						row--;
 					}
-					
+
 					row = r;
 					col = c+1;
 					validMove = true;
@@ -245,7 +265,7 @@ public class Board {
 						}
 						col++;
 					}
-					
+
 					row = r;
 					col = c-1;
 					validMove = true;
@@ -280,6 +300,13 @@ public class Board {
 		}
 		return false;
 	}
+
+	/**
+	*	At each piece on the side you are looking at(defenders or attackers), checks where they can move to and add each
+	*	valid move to a list
+	*
+	*	@param defenders whether you are looking at the moves for defenders or attackers
+	**/
 	public ArrayList<Move> checkAllMoves(boolean defenders){
 		ArrayList<Move> movesList = new ArrayList<Move>();
 		for(int r = 0; r < board.length; ++r)
@@ -303,7 +330,7 @@ public class Board {
 						}
 						row++;
 					}
-					
+
 					row = r-1;
 					col = c;
 					validMove = true;
@@ -319,7 +346,7 @@ public class Board {
 						}
 						row--;
 					}
-					
+
 					row = r;
 					col = c+1;
 					validMove = true;
@@ -335,7 +362,7 @@ public class Board {
 						}
 						col++;
 					}
-					
+
 					row = r;
 					col = c-1;
 					validMove = true;
@@ -367,7 +394,12 @@ public class Board {
 		}
 		return movesList;
 	}
-	
+
+	/**
+	*	Changes the current board to a new board with this move made
+	*
+	*	@param move the move you want to make
+	**/
 	public void makeMove(Move move) {
 		lastBoard = new Board(this);
 		numMoves++;
@@ -383,13 +415,16 @@ public class Board {
 
 		if(board[move.pieceRow][move.pieceCol].getPiece().isKing)
 			kingCoords = new int[]{move.destRow,move.destCol};
-		
+
 		board[move.destRow][move.destCol].setPiece(board[move.pieceRow][move.pieceCol].getPiece());
 		board[move.pieceRow][move.pieceCol].setEmpty();
 
 		checkCapture(move.destRow,move.destCol);
 	}
-	
+
+	/**
+	*	Reverts the current board back to the previous board
+	**/
 	public void undoMove() {
 		for(int i = 0; i < board.length; ++i)
 		{
@@ -404,11 +439,17 @@ public class Board {
 		this.deflastMove = lastBoard.deflastMove;
 		this.attlastlastMove = lastBoard.attlastlastMove;
 		this.attlastMove = lastBoard.attlastMove;
-		
+
 		this.lastBoard = lastBoard.lastBoard;
-		
+
 	}
-	
+
+	/**
+	*	checks in a piece is captured, for that to happen it needs to have an enemy piece on either side of it
+	*
+	*	@param row row of the potentially captured piece
+	*	@param col col of the potentially captured piece
+	**/
 	public void checkCapture(int row, int col){
 		if(!board[row][col].isEmpty()){
 			if(row+2 < board.length && !board[row+1][col].isEmpty() && !board[row+1][col].getPiece().isKing && board[row+1][col].getPiece().isDefender!= board[row][col].getPiece().isDefender)
@@ -441,7 +482,10 @@ public class Board {
 			}
 		}
 	}
-	
+
+	/**
+	*	checks if the king is captured, for that to happen there needs to be an attacker piece on all four sides
+	**/
 	public boolean checkKingCapture() {
 		int kingRow = kingCoords[0];
 		int kingCol = kingCoords[1];
@@ -462,24 +506,33 @@ public class Board {
 				break;
 		}
 		if(((!otherDefenders && kingRow+1 >= board.length) || ((kingRow+1 < board.length && !board[kingRow+1][kingCol].isEmpty() && (!board[kingRow+1][kingCol].getPiece().isDefender)|| kingRow+1 == 5 && kingCol == 5))) &&
-				
+
 				((!otherDefenders && kingRow-1 < 0) || ((kingRow-1 >-1 && !board[kingRow-1][kingCol].isEmpty() && (!board[kingRow-1][kingCol].getPiece().isDefender) || kingRow-1 == 5 && kingCol == 5))) &&
-						
+
 				((!otherDefenders && kingCol+1 >= board[0].length) || ((kingCol+1 < board[0].length && !board[kingRow][kingCol+1].isEmpty() && !board[kingRow][kingCol+1].getPiece().isDefender) || kingRow == 5 && kingCol+1 == 5)) &&
-				
+
 				((!otherDefenders && kingCol-1 < 0) || ((kingCol-1 >-1 && !board[kingRow][kingCol-1].isEmpty() && !board[kingRow][kingCol-1].getPiece().isDefender) || kingRow == 5 && kingCol-1 == 5)))
 		{
 			return true;
 		}
 		return false;
 	}
-	
+
+	/**
+	*	checks if the king is on one of the four corners
+	**/
 	public boolean checkKingEscape() {
 		if(kingCoords[0] == 0 && kingCoords[1]==0 || kingCoords[0] == 10 && kingCoords[1]==0 || kingCoords[0] == 0 && kingCoords[1]==10 || kingCoords[0] == 10 && kingCoords[1]==10)
 			return true;
 		return false;
 	}
-	
+
+	/**
+	*	checks if the game is over for either the attackers or defenders
+	* this means either the king escaped, was captured, the move cap was reached, or there are no moves left
+	*
+	* @param defenders whether you are looking at the remaining moves for the defenders or attackers
+	**/
 	public boolean gameOver(boolean defenders)
 	{
 		if(checkKingEscape() || checkKingCapture() || numMoves > 120 || !movesLeft(defenders)) {
@@ -487,7 +540,13 @@ public class Board {
 		}
 		return false;
 	}
-	
+
+	/**
+	*	Evaluates the reward for the reinforcement learner
+	* 1 if attackers win, -1 if defenders win, 0 for tie
+	*
+	* @param defLastTurn whether the defenders were the last to move
+	**/
 	public int EvaluateReward(boolean defLastTurn)
 	{
 		int rtrn = 0;
@@ -504,10 +563,13 @@ public class Board {
 			else
 				rtrn = 1;
 		}
-		
+
 		return rtrn;
 	}
-	
+
+	/**
+	*	Evaluates the value of the board for AlphaBeta based on the position of the king and number of pieces
+	**/
 	public int EvaluateBoard()
 	{
 		//lower the better defenders are doing
@@ -528,14 +590,14 @@ public class Board {
 						boardVal-=12;
 					}
 				}
-					
+
 			}
 		}
 		if(!isKing)
 			boardVal += 100;
 		else if(checkKingEscape())
 			boardVal -= 100;
-		
+
 		if(kingCoords[0]+1<board.length && !board[kingCoords[0]+1][kingCoords[1]].isEmpty()) {
 			if(!board[kingCoords[0]+1][kingCoords[1]].getPiece().isDefender)
 				boardVal +=1;
@@ -558,28 +620,33 @@ public class Board {
 				boardVal +=1;
 			else
 				boardVal -=1;
-			
+
 		if(kingCoords[0]>5)
 		{
 			boardVal-= kingCoords[0]-5;
 		}
-		else 
+		else
 		{
 			boardVal-= 5-kingCoords[0];
 		}
-		
+
 		if(kingCoords[1]>5)
 		{
 			boardVal-= kingCoords[1]-5;
 		}
-		else 
+		else
 		{
 			boardVal-= 5-kingCoords[1];
 		}
-		
+
 		return boardVal;
 	}
-	
+
+	/**
+	*	calculating the weights for the reinforcement learner
+	* each weight values a specific aspect of the board, for example there is a weight for every board tile
+	* feature set 1 contains 206 weights
+	**/
 	/////////////FEATURE SET 1///////////////////
 	public float[] calculateFeatures1() {
 		float[] features = new float[206];
@@ -633,20 +700,25 @@ public class Board {
 		}
 		else
 			features[1]=0;
-		
+
 		if(kingCoords[0] == 10 || kingCoords[1] == 10)
 			features[2] = -1;
 		else
 			features[2] = 0;
-		
+
 		for(int i = 0; i < features.length; ++i)
 		{
 			features[i] = features[i]/10;
 		}
-		
+
 		return features;
 	}
-	
+
+	/**
+	*	calculating the weights for the reinforcement learner
+	* feature set 2 values the board differently and therefore the learners behave differenty
+	* feature set 2 contains 125 weights
+	**/
 	/////////////FEATURE SET 2///////////////////
 	public float[] calculateFeatures2() {
 		float[] features = new float[125];
@@ -670,7 +742,7 @@ public class Board {
 				}
 				else
 					features[index]=0;
-				
+
 				index++;
 			}
 		}
@@ -678,7 +750,7 @@ public class Board {
 			features[1] =1;
 		else
 			features[1] = 0;
-		
+
 		if(kingCoords[0]+1<board.length && !board[kingCoords[0]+1][kingCoords[1]].isEmpty()) {
 			if(!board[kingCoords[0]+1][kingCoords[1]].getPiece().isDefender)
 				features[2] +=1;
@@ -701,25 +773,25 @@ public class Board {
 				features[2] +=1;
 			else
 				features[2] -=1;
-			
+
 		if(kingCoords[0]>5)
 		{
 			features[3]-= kingCoords[0]-5;
 		}
-		else 
+		else
 		{
 			features[3]-= 5-kingCoords[0];
 		}
-		
+
 		if(kingCoords[1]>5)
 		{
 			features[3]-= kingCoords[1]-5;
 		}
-		else 
+		else
 		{
 			features[3]-= 5-kingCoords[1];
 		}
-		
+
 		for(int i = 0; i < 3; ++i)
 		{
 			if(features[i]>0)
@@ -731,15 +803,19 @@ public class Board {
 			features[3]=-1;
 		else
 			features[3]=0;
-		
+
 		for(int i = 0; i < features.length; ++i)
 		{
 			features[i] = features[i]/10;
 		}
-		
+
 		return features;
 	}
-	
+
+	/**
+	*	calculating the weights for the reinforcement learner
+	* feature set 3 contains 242 weights
+	**/
 	public float[] calculateFeatures3() {
 		float[] features = new float[242];
 		int neighborCount = 2;
@@ -772,7 +848,7 @@ public class Board {
 							features[atRisk]=-1;
 							risk = true;
 						}
-						
+
 					}else if(!board[r][c].getPiece().isKing) {
 						atRisk++;
 						features[0]-=2;
@@ -798,7 +874,7 @@ public class Board {
 					{
 						isKing = true;
 					}
-					
+
 				}
 				if(r>0 && r< board.length-1 && c>0 && c < board.length-1)
 				{
@@ -832,20 +908,23 @@ public class Board {
 		}
 		else
 			features[1]=0;
-		
+
 		if(kingCoords[0] == 10 || kingCoords[1] == 10)
 			features[2] = -1;
 		else
 			features[2] = 0;
-		
+
 		for(int i = 0; i < features.length; ++i)
 		{
 			features[i] = features[i]/10;
 		}
-		
+
 		return features;
 	}
-	
+
+	/**
+	*	checks who won the game, 1=Attackers, -1=Defenders, 0=tie
+	**/
 	public int winner() {
 		if(checkKingCapture())
 			return 1;
@@ -857,5 +936,5 @@ public class Board {
 			return -1;
 		return 0;
 	}
-	
+
 }

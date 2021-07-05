@@ -7,6 +7,11 @@ import java.util.Scanner;
 
 public class Game {
 
+	/**
+	*	prints moves to the terminal so the player can choose their move
+	*
+	* @param attackMoves list of current moves
+	**/
 	public static void printMoves(ArrayList<Move> attackMoves)
 	{
 		for(int i = 0; i < attackMoves.size(); ++i)
@@ -18,7 +23,10 @@ public class Game {
 		System.out.println();
 	}
 
-	public static void noPlayer() throws IOException {
+	/**
+	*	AlphaBeta vs AlphaBeta
+	**/
+	public static void ABvsAB() throws IOException {
 		//0-black/Attacker 1-white/Defender
 			for(int k = 0; k < 100; ++k) {
 				Board board = new Board();
@@ -65,6 +73,9 @@ public class Game {
 				}
 	}
 
+	/**
+	*	Human as Defender vs AlphaBeta as Attacker
+	**/
 	public static void onePlayerDef() throws IOException {
 		Scanner scnr = new Scanner(System.in);
 
@@ -126,6 +137,9 @@ public class Game {
 			System.out.println("Defenders Win!");
 	}
 
+	/**
+	*	Human as Attacker vs AlphaBeta as Defender
+	**/
 	public static void onePlayerAtt() throws IOException {
 		Scanner scnr = new Scanner(System.in);
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -196,6 +210,9 @@ public class Game {
 			System.out.println("Draw!");
 	}
 
+	/**
+	*	Human vs Human
+	**/
 	public static void twoPlayer() throws IOException {
 
 		Scanner scnr = new Scanner(System.in);
@@ -273,6 +290,9 @@ public class Game {
 			System.out.println("Draw!");
 	}
 
+	/**
+	*	AlphaBeta as Defender vs ReinforcementLearner player as Attacker
+	**/
 	public static void ABvsRFP() throws IOException {
 		//AB is defender
 
@@ -361,6 +381,9 @@ public class Game {
 		System.out.println();
 	}
 
+	/**
+	*	AlphaBeta as Attacker vs ReinforcementLearner player as Defender
+	**/
 	public static void ABvsRFP2() throws IOException {
 		//AB is Attacker
 		Board startboard = new Board();
@@ -453,6 +476,9 @@ public class Game {
 		System.out.println();
 	}
 
+	/**
+	*	ReinforcementLearner player vs ReinforcementLearner player
+	**/
 	public static void RFPvsRFP() throws IOException{
 		Board startboard = new Board();
 
@@ -575,6 +601,15 @@ public class Game {
 		System.out.println();
 	}
 
+	/**
+	*	prints weights for ReinforcentLearner to provided file path
+	* the weights are what the ReinforcentLearner is actually learning,
+	* printing these weights to a file is sort of like a checkpoint of what it has learned
+	*
+	* @param file file path to print weights to
+	* @param weights current weights for learner
+	* @param numGames number of games played
+	**/
 	public static void printWeightsToFile(String file, float[] weights, int numGames)
 	{
 		try {
@@ -591,6 +626,10 @@ public class Game {
 		}
 	}
 
+	/**
+	*	Displays opening text with options,
+	* Currently set up to just test each type of game
+	**/
 	public static void main(String[] args) throws IOException {
 		ABvsRFP2();
 		/*Scanner scnr = new Scanner(System.in);
@@ -614,7 +653,7 @@ public class Game {
 		}
 		if(input == 0)
 		{
-			noPlayer();
+			ABvsAB();
 		}else if(input == 1) {
 			System.out.println("What side would you like to play? 0-Attackers, 1-Defenders");
 			input = scnr.nextInt();

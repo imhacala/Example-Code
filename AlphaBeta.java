@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class AlphaBeta{
-
-
-
+	/**
+	*	Finds the move with the lowest board value
+	*
+	*	@param board current board
+	*	@param alpha best move score for alpha, initially set to an extremely low value
+	*	@param beta best move score for beta, initially set to an extremely high value
+	*	@param depth how many moves ahead the player is looking
+	**/
 	public int[] minValue(Board board, int alpha, int beta, int depth) {
 		if(board.gameOver(false) || depth > 3) {
 			return new int[]{board.EvaluateBoard(),0};
@@ -30,6 +35,14 @@ public class AlphaBeta{
 		return new int[]{beta,bestMove};
 	}
 
+	/**
+	*	Finds the move with the highest board value
+	*
+	*	@param board current board
+	*	@param alpha best move score for alpha, initially set to an extremely low value
+	*	@param beta best move score for beta, initially set to an extremely high value
+	*	@param depth how many moves ahead the player is looking
+	**/
 	public int[] maxValue(Board board, int alpha, int beta, int depth){
 		if(board.gameOver(true) || depth > 3) {
 			return new int[]{board.EvaluateBoard(),0};
@@ -53,6 +66,12 @@ public class AlphaBeta{
 		return new int[]{alpha, bestMove};
 	}
 
+	/**
+	*	Prints board to file of given path
+	*
+	*	@param board current board
+	*	@param file file path to print the board to
+	**/
 	public void printBoardToFile(Tile[][] board, String file) throws IOException {
 		FileWriter fileWriter = new FileWriter(file, true);
 

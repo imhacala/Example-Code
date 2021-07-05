@@ -34,6 +34,11 @@ public class ReinforcementLearner {
 	boolean min;
 	boolean rand = false;
 
+	/**
+	*	Creates new learner and initializes weights
+	*
+	*	@param min whether the player is trying to minimize their reward
+	**/
 	public ReinforcementLearner(boolean min) {
 		this.min = min;
 		for(int i = 0; i < weights.length; i++)
@@ -42,6 +47,12 @@ public class ReinforcementLearner {
 		}
 	}
 
+	/**
+	*	Creates new learner and initializes weights
+	*
+	*	@param min whether the player is trying to minimize their reward
+	*	@param w weights for learner
+	**/
 	public ReinforcementLearner(boolean min, float[] w) {
 		this.min = min;
 		weights = new float[w.length];
@@ -51,7 +62,12 @@ public class ReinforcementLearner {
 		}
 	}
 
-
+	/**
+	*	Initializes learner and makes first move
+	*
+	*	@param board current board
+	*	@param set dictates which feature set to use (1,2,3)
+	**/
 	public void InitializePlayer(Board board, int set)
 	{
 		ArrayList<Move> moves = board.checkAllMoves(min);
@@ -108,6 +124,12 @@ public class ReinforcementLearner {
 		}
 	}
 
+	/**
+	*	Updates the player/weights for the learner throughout the game
+	*
+	*	@param board current board
+	*	@param set dictates which feature set to use (1,2,3)
+	**/
 	public void UpdatePlayer(Board board, int set) {
 
 			ArrayList<Move> moves = board.checkAllMoves(min);
@@ -128,12 +150,14 @@ public class ReinforcementLearner {
 				for(int i = 0; i < moves.size(); ++i)
 				{
 					board.makeMove(moves.get(i));
-					if(set ==1)
-						features = board.calculateFeatures1();
-					else if(set ==2)
-						features = board.calculateFeatures2();
-					else
-						features = board.calculateFeatures3();
+					switch(set){
+						case 1: features = board.calculateFeatures1();
+										break;
+						case 2: features = board.calculateFeatures2();
+										break;
+						default: features = board.calculateFeatures3();
+										break;
+					}
 					tempReward = board.EvaluateReward(min);
 					val = 0;
 					if(!board.gameOver(min)) {
@@ -174,7 +198,13 @@ public class ReinforcementLearner {
 			a = aPrime;
 	}
 
-	public void TestPlayer(Board board, boolean setone) {
+	/**
+	* Plays the games with learned weights without further updating them
+	*
+	*	@param board current board
+	*	@param set dictates which feature set to use (1,2,3)
+	**/
+	public void TestPlayer(Board board, int set) {
 
 		ArrayList<Move> moves = board.checkAllMoves(min);
 		float[] features = new float[weights.length];
@@ -192,10 +222,14 @@ public class ReinforcementLearner {
 			for(int i = 0; i < moves.size(); ++i)
 			{
 				board.makeMove(moves.get(i));
-				if(setone)
-					features = board.calculateFeatures1();
-				else
-					features = board.calculateFeatures2();
+				switch(set){
+					case 1: features = board.calculateFeatures1();
+									break;
+					case 2: features = board.calculateFeatures2();
+									break;
+					default: features = board.calculateFeatures3();
+									break;
+				}
 
 				tempReward = board.EvaluateReward(min);
 				val = 0;
@@ -230,6 +264,12 @@ public class ReinforcementLearner {
 		a = aPrime;
 }
 
+/**
+*	updates the weights once the game is over
+*
+*	@param board current board
+*	@param set dictates which feature set to use (1,2,3)
+**/
 	public void UpdateWeights(Board board, int set) {
 		float[] features;
 		if(set ==1)
